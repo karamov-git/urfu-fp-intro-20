@@ -88,7 +88,8 @@ infixr 5 :.
     - headOr 2 Nil ~> 2
 -}
 headOr :: a -> List a -> a
-headOr = error "not implemented"
+headOr a Nil = a
+headOr _ (a :. _) = a
 
 {-
   `take n` возвращает первые `n` элементов списка:
@@ -97,8 +98,9 @@ headOr = error "not implemented"
     - take 0 (1 :. 2 :. 3 :. Nil) ~> Nil
 -}
 take :: Integer -> List a -> List a
-take = error "not implemented"
-
+take n Nil = Nil
+take 0 (a :. _) = Nil
+take n (a :. la) = a :. (take(n-1) la)
 {-
   `length xs` возвращает длину списка `xs`:
     - length Nil ~> 0
@@ -107,7 +109,8 @@ take = error "not implemented"
     - length ('a' :. 'b' :. Nil) ~> 2
 -}
 length :: List a -> Integer
-length = error "not implemented"
+length Nil = 0
+length (a :. na) = 1 + length(na)
 
 {-
   `sum` вычисляет сумму списка целых чисел:
@@ -117,7 +120,8 @@ length = error "not implemented"
     - sum (104 :. 123 :. 35 :. Nil) ~> 262
 -}
 sum :: List Integer -> Integer
-sum = error "not implemented"
+sum Nil = 0
+sum (a :. na) = a + sum na
 
 -- </Задачи для самостоятельного решения>
 
@@ -215,7 +219,8 @@ sum = error "not implemented"
             4   0
 -}
 foldr :: (a -> b -> b) -> b -> List a -> b
-foldr f b xs = error "not implemented"
+foldr f b Nil = b
+foldr f b (a :. na) = f a (foldr f b na)
 
 {-
   `map` принимает функцию `f` и список, применяя `f` к каждому элементу:
@@ -227,7 +232,7 @@ foldr f b xs = error "not implemented"
   Реализуйте с помощью `foldr`.
 -}
 map :: (a -> b) -> List a -> List b
-map = error "not implemented"
+map f l = foldr (\a na -> f a :. na) Nil l 
 
 {-
   `filter` принимает предикат `f` и список, возвращая список с элементами
@@ -240,7 +245,7 @@ map = error "not implemented"
   Реализуйте с помощью `foldr`.
 -}
 filter :: (a -> Bool) -> List a -> List a
-filter = error "not implemented"
+filter f l = foldr (\a na -> if f a then a :. na else na) Nil l
 
 {-
   Правая свёртка действует на список справа, с конца.
@@ -283,7 +288,8 @@ filter = error "not implemented"
   список `xs` слева:
 -}
 foldl :: (b -> a -> b) -> b -> List a -> b
-foldl f b xs = error "not implemented"
+foldl f b Nil = b
+foldl f b (a :. na) = foldl f (f b a) na
 
 {-
   `reverse` разворачивает список:
@@ -294,7 +300,7 @@ foldl f b xs = error "not implemented"
   Реализуйте с помощью `foldl`.
 -}
 reverse :: List a -> List a
-reverse = error "not implemented"
+reverse l = foldl (\a na -> na :. a) Nil l
 
 {-
   Пришло время перейти к стандартным спискам. Напишите функцию, которая
@@ -307,12 +313,12 @@ reverse = error "not implemented"
     - Nil соответствует []
     - (:.) соответствует (:)
 -}
-toListH :: List a -> [a]
-toListH = error "not implemented"
+toListH Nil = []
+toListH (a :. na) = a : toListH na
 
 -- И обратно
-fromListH :: [a] -> List a
-fromListH = error "not implemented"
+fromListH [] = Nil
+fromListH (a : na) = a :. fromListH na 
 
 -- </Задачи для самостоятельного решения>
 
@@ -391,7 +397,7 @@ fromListH = error "not implemented"
     P.foldr :: (a -> b -> b) -> b -> [a] -> b
 -}
 concat :: [[a]] -> [a]
-concat ls = error "not implemented"
+concat ls = P.foldr (\x y -> x ++ y) [] ls
 
 {-
   Функция `intercalate` вставляет список элементов между другими списками.
@@ -406,6 +412,6 @@ concat ls = error "not implemented"
     P.foldr :: (a -> b -> b) -> b -> [a] -> b
 -}
 intercalate :: [a] -> [[a]] -> [a]
-intercalate sep ls = error "not implemented"
+intercalate sep l = P.foldr (\x y -> if null y then x else x ++ sep ++ y) [] l
 
 -- </Задачи для самостоятельного решения>
